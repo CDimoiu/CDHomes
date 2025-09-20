@@ -6,13 +6,15 @@ import com.example.cdhomes.data.local.ListingDatabase
 import com.example.cdhomes.data.remote.ListingApi
 import com.example.cdhomes.data.repository.ListingRepositoryImpl
 import com.example.cdhomes.domain.repository.ListingRepository
+import com.example.cdhomes.domain.usecase.GetListingDetailsUseCase
+import com.example.cdhomes.domain.usecase.GetListingsUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import jakarta.inject.Singleton
 import java.util.concurrent.TimeUnit
+import javax.inject.Singleton
 import kotlin.jvm.java
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -60,4 +62,12 @@ object AppModule {
   @Provides
   fun provideRepository(repositoryImpl: ListingRepositoryImpl): ListingRepository =
     repositoryImpl
+
+  @Provides
+  fun provideGetListingsUseCase(repository: ListingRepository): GetListingsUseCase =
+    GetListingsUseCase(repository)
+
+  @Provides
+  fun provideGetListingDetailsUseCase(repository: ListingRepository): GetListingDetailsUseCase =
+    GetListingDetailsUseCase(repository)
 }

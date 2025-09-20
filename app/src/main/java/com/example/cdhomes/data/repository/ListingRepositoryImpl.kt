@@ -4,8 +4,8 @@ import com.example.cdhomes.domain.model.Listing
 import com.example.cdhomes.data.local.ListingDao
 import com.example.cdhomes.data.remote.ListingApi
 import com.example.cdhomes.domain.repository.ListingRepository
-import jakarta.inject.Inject
-import jakarta.inject.Singleton
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
