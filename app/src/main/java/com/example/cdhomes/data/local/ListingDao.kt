@@ -9,11 +9,11 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ListingDao {
   @Query("SELECT * FROM listings")
-  fun getAll(): Flow<List<ListingEntity>>
+  fun getAllListings(): Flow<List<ListingEntity>>
 
   @Query("SELECT * FROM listings WHERE id = :id")
-  fun getById(id: Int): Flow<ListingEntity?>
+  fun getListingById(id: Int): Flow<ListingEntity?>
 
   @Insert(onConflict = OnConflictStrategy.REPLACE)
-  suspend fun insertAll(listings: List<ListingEntity>)
+  suspend fun insertAllListings(listings: List<ListingEntity>)
 }

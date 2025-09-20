@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import com.example.cdhomes.data.local.ListingDatabase
 import com.example.cdhomes.data.remote.ListingApi
+import com.example.cdhomes.data.repository.ListingRepositoryImpl
+import com.example.cdhomes.domain.repository.ListingRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -54,4 +56,8 @@ object AppModule {
 
   @Provides
   fun provideDao(database: ListingDatabase) = database.listingDao()
+
+  @Provides
+  fun provideRepository(repositoryImpl: ListingRepositoryImpl): ListingRepository =
+    repositoryImpl
 }

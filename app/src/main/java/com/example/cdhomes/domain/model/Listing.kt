@@ -1,4 +1,4 @@
-package com.example.cdhomes.data.local
+package com.example.cdhomes.domain.model
 
 data class Listing(
   val id: Int,
