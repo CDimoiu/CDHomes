@@ -1,6 +1,8 @@
 package com.example.cdhomes.di
 
 import android.content.Context
+import androidx.room.Room
+import com.example.cdhomes.data.local.ListingDatabase
 import com.example.cdhomes.data.remote.ListingApi
 import dagger.Module
 import dagger.Provides
@@ -43,4 +45,13 @@ object AppModule {
   @Provides
   @Singleton
   fun provideApi(retrofit: Retrofit): ListingApi = retrofit.create(ListingApi::class.java)
+
+
+  @Provides
+  @Singleton
+  fun provideDatabase(@ApplicationContext context: Context): ListingDatabase =
+    Room.databaseBuilder(context, ListingDatabase::class.java, "listings.db").build()
+
+  @Provides
+  fun provideDao(database: ListingDatabase) = database.listingDao()
 }
