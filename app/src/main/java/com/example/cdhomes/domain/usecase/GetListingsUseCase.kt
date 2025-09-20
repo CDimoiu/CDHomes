@@ -8,4 +8,3 @@ class GetListingsUseCase @Inject constructor(
 ) {
   operator fun invoke() = repository.getListings()
 }
-git
