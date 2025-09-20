@@ -57,7 +57,6 @@ android {
 }
 
 dependencies {
-
   implementation(libs.androidx.core.ktx)
   implementation(libs.androidx.lifecycle.runtime.ktx)
   implementation(libs.androidx.activity.compose)
@@ -69,10 +68,15 @@ dependencies {
   implementation(libs.androidx.navigation.compose)
   implementation(libs.androidx.compose.material3)
 
+  implementation(libs.kotlinx.coroutines.core)
+  implementation(libs.kotlinx.coroutines.android)
+
   implementation(libs.hilt.android)
   kapt(libs.hilt.compiler)
   implementation(libs.hilt.navigation.compose)
 
+  implementation(libs.okhttp)
+  implementation(libs.okhttp.logging.interceptor)
   implementation(libs.retrofit)
   implementation(libs.retrofit.gson)
 
