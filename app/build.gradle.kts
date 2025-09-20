@@ -84,7 +84,7 @@ dependencies {
   implementation(libs.room.ktx)
   kapt(libs.room.compiler)
 
-  implementation(libs.glide)
+  implementation(libs.coil.compose)
 
   testImplementation(libs.junit)
   androidTestImplementation(libs.androidx.junit)

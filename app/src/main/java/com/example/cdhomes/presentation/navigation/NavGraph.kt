@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.cdhomes.presentation.listings.ListingsScreen
 import com.example.cdhomes.presentation.onboarding.SplashScreen
 
 @Composable
@@ -16,5 +17,13 @@ fun NavGraph(
     startDestination = Destinations.SPLASH
   ) {
     composable(Destinations.SPLASH) { SplashScreen { navController.navigate(Destinations.LISTINGS) } }
+
+    composable(Destinations.LISTINGS) {
+      ListingsScreen(
+        onItemClick = { id ->
+          navController.navigate(Destinations.listingDetailRoute(id))
+        }
+      )
+    }
   }
 }
