@@ -87,7 +87,7 @@ fun ListingsScreen(
         onFilterChange = { viewModel.updateFilter(it) }
       )
 
-      val listingsToShow = when (uiState) {
+      val listings = when (uiState) {
         is ListingsUiState.Success -> (uiState as ListingsUiState.Success).listings
         is ListingsUiState.Error -> (uiState as ListingsUiState.Error).cachedListings
         is ListingsUiState.Loading -> (uiState as ListingsUiState.Loading).cachedListings
@@ -98,28 +98,34 @@ fun ListingsScreen(
         onRefresh = { viewModel.refreshListings() },
         modifier = Modifier.fillMaxSize()
       ) {
-        if (listingsToShow.isEmpty()) {
-          Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-          ) {
-            Text(
-              text = when (uiState) {
-                is ListingsUiState.Error -> stringResource(R.string.listings_load_error)
-                is ListingsUiState.Loading -> stringResource(R.string.listings_loading)
-                else -> stringResource(R.string.listings_unavailable)
-              },
-              color = MaterialTheme.colorScheme.onBackground,
-              textAlign = TextAlign.Center
-            )
-          }
-        } else {
-          LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(PaddingMedium),
-            verticalArrangement = Arrangement.spacedBy(PaddingMedium)
-          ) {
-            items(items = listingsToShow, key = { it.id }) { listing ->
+        LazyColumn(
+          modifier = Modifier.fillMaxSize(),
+          contentPadding = PaddingValues(PaddingMedium),
+          verticalArrangement = Arrangement.spacedBy(PaddingMedium)
+        ) {
+          if (listings.isEmpty()) {
+            item {
+              Box(
+                modifier = Modifier
+                  .fillParentMaxSize(),
+                contentAlignment = Alignment.Center
+              ) {
+                Text(
+                  text = when (uiState) {
+                    is ListingsUiState.Error -> stringResource(R.string.listings_load_error)
+                    is ListingsUiState.Loading -> stringResource(R.string.listings_loading)
+                    else -> stringResource(R.string.listings_unavailable)
+                  },
+                  color = MaterialTheme.colorScheme.onBackground,
+                  textAlign = TextAlign.Center
+                )
+              }
+            }
+          } else {
+            items(
+              items = listings,
+              key = { it.id }
+            ) { listing ->
               val dismissState = rememberSwipeToDismissBoxState(
                 confirmValueChange = { value ->
                   if (value == SwipeToDismissBoxValue.EndToStart ||

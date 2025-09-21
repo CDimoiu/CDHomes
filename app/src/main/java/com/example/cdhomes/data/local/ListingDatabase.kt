@@ -3,7 +3,6 @@ package com.example.cdhomes.data.local
 import androidx.room.Database
 import androidx.room.RoomDatabase
 
-
 @Database(
   entities = [ListingEntity::class],
   version = 1,

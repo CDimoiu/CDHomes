@@ -52,19 +52,32 @@ fun ListingItem(listing: Listing, onClick: (Int) -> Unit) {
     )
 
     Spacer(modifier = Modifier.width(PaddingLarger))
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(start = PaddingMedium)
+    ) {
       Text(text = listing.propertyType, fontWeight = FontWeight.Bold)
       Spacer(Modifier.height(PaddingSmall))
-      Text(text = stringResource(R.string.listing_rooms, listing.rooms ?: "-"))
+      Text(
+        text = stringResource(R.string.listing_rooms, listing.rooms ?: "-"),
+        color = MaterialTheme.colorScheme.onBackground
+      )
       Spacer(Modifier.height(PaddingSmall))
-      Text(text = stringResource(R.string.listing_area, listing.area.toInt()))
+      Text(
+        text = stringResource(R.string.listing_area, listing.area.toInt()),
+        color = MaterialTheme.colorScheme.onBackground
+      )
       Spacer(Modifier.height(PaddingSmall))
       Text(
         text = stringResource(R.string.listing_price, listing.price.toInt()),
         color = MaterialTheme.colorScheme.primary
       )
       Spacer(Modifier.height(PaddingSmall))
-      Text(text = stringResource(R.string.listing_city, listing.city))
+      Text(
+        text = stringResource(R.string.listing_city, listing.city),
+        color = MaterialTheme.colorScheme.onBackground
+      )
     }
   }
 }

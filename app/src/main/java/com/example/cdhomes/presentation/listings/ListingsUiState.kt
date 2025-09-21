@@ -5,6 +5,7 @@ import com.example.cdhomes.domain.model.ListingFilter
 
 sealed class ListingsUiState {
   data class Loading(val cachedListings: List<Listing> = emptyList()) : ListingsUiState()
+
   data class Success(
     val listings: List<Listing>,
     val filter: ListingFilter = ListingFilter(),

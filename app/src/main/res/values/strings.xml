@@ -8,4 +8,10 @@
   <string name="listing_area">• %1$d m²</string>
   <string name="listing_price">• %1$d €</string>
   <string name="listing_city">• %1$s</string>
+  <string name="listing_detail_price">%1$d €</string>
+  <string name="listing_detail_area">• Area: %1$d m²</string>
+  <string name="listing_detail_rooms">• Rooms: %1$s</string>
+  <string name="listing_detail_bedrooms">• Bedrooms: %1$s</string>
+  <string name="listing_detail_property_ype">• Type: %1$s</string>
+  <string name="listing_detail_professional">• By: %1$s</string>
 </resources>

@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
 import com.example.cdhomes.R
-import com.example.cdhomes.presentation.theme.Dimens.ImageHeightMedium
+import com.example.cdhomes.presentation.theme.Dimens.ImageHeightLarge
 import kotlinx.coroutines.delay
 
 @Composable
@@ -50,7 +50,7 @@ fun SplashScreen(
       painter = painterResource(id = R.drawable.icon_home),
       contentDescription = null,
       modifier = Modifier
-        .size(ImageHeightMedium)
+        .size(ImageHeightLarge)
         .scale(scale.value)
     )
   }

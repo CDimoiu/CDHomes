@@ -7,5 +7,5 @@ data class ListingFilter(
   val maxRooms: Int? = null,
   val minArea: Double? = null,
   val maxArea: Double? = null,
-  val city: String? = null
+  val city: String? = null,
 )
