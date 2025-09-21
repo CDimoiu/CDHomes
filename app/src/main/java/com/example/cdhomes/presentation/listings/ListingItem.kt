@@ -30,13 +30,15 @@ fun ListingItem(listing: Listing, onClick: (Int) -> Unit) {
     AsyncImage(
       model = listing.url,
       contentDescription = null,
-      modifier = Modifier.size(100.dp).clip(RoundedCornerShape(8.dp)),
+      modifier = Modifier
+        .size(100.dp)
+        .clip(RoundedCornerShape(8.dp)),
       contentScale = ContentScale.Crop
     )
     Spacer(modifier = Modifier.width(16.dp))
     Column(modifier = Modifier.fillMaxWidth()) {
       Text(text = listing.propertyType, fontWeight = FontWeight.Bold)
-      Text(text = "${listing.rooms} rooms • ${listing.area} m²")
+      Text(text = "${listing.rooms ?: "-"} rooms • ${listing.area} m²")
       Text(text = "${listing.city} • ${listing.price} €")
     }
   }

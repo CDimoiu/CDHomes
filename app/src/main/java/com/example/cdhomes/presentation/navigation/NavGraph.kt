@@ -10,7 +10,7 @@ import androidx.navigation.navArgument
 import com.example.cdhomes.presentation.listingdetail.ListingDetailScreen
 import com.example.cdhomes.presentation.listings.ListingsScreen
 import com.example.cdhomes.presentation.navigation.Destinations.LISTING_DETAIL
-import com.example.cdhomes.presentation.onboarding.SplashScreen
+import com.example.cdhomes.presentation.splash.SplashScreen
 
 @Composable
 fun NavGraph(navController: NavHostController) {

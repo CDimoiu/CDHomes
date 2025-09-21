@@ -1,4 +1,7 @@
 <resources>
   <string name="app_name">CD Homes</string>
   <string name="generic_error">Oops, something went wrong. Please try again later.</string>
+  <string name="listings_loading">"Loading listings…"</string>
+  <string name="listings_unavailable">"No listings available"</string>
+  <string name="listings_load_error">"Failed to load listings"</string>
 </resources>

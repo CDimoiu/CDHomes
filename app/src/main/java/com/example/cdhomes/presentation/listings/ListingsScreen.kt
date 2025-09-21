@@ -1,5 +1,6 @@
 package com.example.cdhomes.presentation.listings
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,12 +11,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
@@ -27,6 +31,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.cdhomes.R
@@ -47,13 +52,22 @@ fun ListingsScreen(
 
   LaunchedEffect(uiState) {
     if (uiState is ListingsUiState.Error) {
-      val message = (uiState as ListingsUiState.Error).message.takeIf { it.isNullOrBlank() }
+      val message = (uiState as ListingsUiState.Error).message.takeIf { !it.isNullOrBlank() }
         ?: genericError
       scope.launch { snackbarHostState.showSnackbar(message) }
     }
   }
 
   Scaffold(
+    topBar = {
+      TopAppBar(
+        title = { Text("CD Homes") },
+        colors = TopAppBarDefaults.mediumTopAppBarColors(
+          containerColor = MaterialTheme.colorScheme.primary,
+          titleContentColor = MaterialTheme.colorScheme.onPrimary,
+        )
+      )
+    },
     snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
   ) { innerPadding ->
     Column(
@@ -90,10 +104,12 @@ fun ListingsScreen(
           ) {
             Text(
               text = when (uiState) {
-                is ListingsUiState.Error -> "Failed to load listings"
-                is ListingsUiState.Loading -> "Loading listings..."
-                else -> "No listings available"
-              }
+                is ListingsUiState.Error -> stringResource(R.string.listings_load_error)
+                is ListingsUiState.Loading -> stringResource(R.string.listings_loading)
+                else -> stringResource(R.string.listings_unavailable)
+              },
+              color = MaterialTheme.colorScheme.onBackground,
+              textAlign = TextAlign.Center
             )
           }
         } else {
@@ -126,10 +142,12 @@ fun ListingsScreen(
 
         if (uiState is ListingsUiState.Loading) {
           Box(
-            Modifier.fillMaxSize(),
+            Modifier
+              .fillMaxSize()
+              .background(MaterialTheme.colorScheme.background.copy(alpha = 0.5f)),
             contentAlignment = Alignment.Center
           ) {
-            CircularProgressIndicator()
+            CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
           }
         }
       }
