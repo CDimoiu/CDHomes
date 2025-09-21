@@ -32,10 +32,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.cdhomes.R
 import com.example.cdhomes.domain.model.ListingFilter
+import com.example.cdhomes.presentation.theme.Dimens.PaddingMedium
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -116,8 +116,8 @@ fun ListingsScreen(
         } else {
           LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            contentPadding = PaddingValues(PaddingMedium),
+            verticalArrangement = Arrangement.spacedBy(PaddingMedium)
           ) {
             items(items = listingsToShow, key = { it.id }) { listing ->
               val dismissState = rememberSwipeToDismissBoxState(

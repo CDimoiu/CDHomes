@@ -23,8 +23,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.example.cdhomes.domain.model.ListingFilter
+import com.example.cdhomes.presentation.theme.Dimens.PaddingMedium
+import com.example.cdhomes.presentation.theme.Dimens.PaddingSmall
 
 @Composable
 fun FiltersSection(
@@ -40,27 +41,27 @@ fun FiltersSection(
   Column(
     modifier = Modifier
       .fillMaxWidth()
-      .padding(8.dp)
+      .padding(PaddingMedium)
   ) {
     Row(
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier
         .fillMaxWidth()
         .clickable { expanded = !expanded }
-        .padding(vertical = 4.dp)
+        .padding(vertical = PaddingSmall)
     ) {
       Text("Filters", style = MaterialTheme.typography.titleMedium)
       Spacer(modifier = Modifier.weight(1f))
       Icon(
         imageVector = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-        contentDescription = if (expanded) "Collapse" else "Expand"
+        contentDescription = null,
       )
     }
 
     if (expanded) {
       Column(
         modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(PaddingMedium)
       ) {
         val maxPriceLabel = if (maxPriceSlider < 1_000_000) {
           "${(maxPriceSlider / 1000).toInt()}k"

@@ -29,13 +29,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.cdhomes.R
 import com.example.cdhomes.domain.model.Listing
+import com.example.cdhomes.presentation.theme.Dimens.ImageHeightLarge
+import com.example.cdhomes.presentation.theme.Dimens.PaddingLarge
+import com.example.cdhomes.presentation.theme.Dimens.PaddingLarger
+import com.example.cdhomes.presentation.theme.Dimens.PaddingSmall
+import com.example.cdhomes.presentation.theme.Dimens.PaddingSmaller
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -100,35 +107,40 @@ fun ListingDetailScreen(
             modifier = Modifier
               .fillMaxSize()
               .verticalScroll(rememberScrollState())
-              .padding(16.dp)
+              .padding(PaddingLarger)
           ) {
             AsyncImage(
-              model = listing.url ?: "",
+              model = ImageRequest.Builder(LocalContext.current)
+                .data(listing.url ?: "")
+                .crossfade(true)
+                .build(),
               contentDescription = listing.city,
+              placeholder = painterResource(R.drawable.icon_home),
+              error = painterResource(R.drawable.icon_home),
               modifier = Modifier
                 .fillMaxWidth()
-                .height(220.dp)
-                .clip(RoundedCornerShape(12.dp)),
+                .height(ImageHeightLarge)
+                .clip(RoundedCornerShape(PaddingLarge)),
               contentScale = ContentScale.Crop
             )
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(PaddingLarger))
             Text(
               listing.city,
               style = MaterialTheme.typography.headlineSmall,
               color = MaterialTheme.colorScheme.onBackground
             )
-            Spacer(Modifier.height(4.dp))
+            Spacer(Modifier.height(PaddingSmall))
             Text(
               "${listing.price} €",
               style = MaterialTheme.typography.titleLarge,
               color = MaterialTheme.colorScheme.primary
             )
-            Spacer(Modifier.height(4.dp))
+            Spacer(Modifier.height(PaddingSmall))
             Text(
               "${listing.rooms ?: "-"} rooms • ${listing.area} m²",
               color = MaterialTheme.colorScheme.onBackground
             )
-            Spacer(Modifier.height(2.dp))
+            Spacer(Modifier.height(PaddingSmaller))
             Text(
               "Bedrooms: ${listing.bedrooms ?: "-"}",
               color = MaterialTheme.colorScheme.onBackground

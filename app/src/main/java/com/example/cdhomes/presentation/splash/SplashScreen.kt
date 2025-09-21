@@ -16,8 +16,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import com.example.cdhomes.R
+import com.example.cdhomes.presentation.theme.Dimens.ImageHeightMedium
 import kotlinx.coroutines.delay
 
 @Composable
@@ -46,12 +46,11 @@ fun SplashScreen(
       .background(MaterialTheme.colorScheme.background),
     contentAlignment = Alignment.Center
   ) {
-    // Animated logo
     Image(
       painter = painterResource(id = R.drawable.icon_home),
       contentDescription = null,
       modifier = Modifier
-        .size(150.dp)
+        .size(ImageHeightMedium)
         .scale(scale.value)
     )
   }

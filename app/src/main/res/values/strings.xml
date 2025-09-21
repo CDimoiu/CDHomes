@@ -4,4 +4,8 @@
   <string name="listings_loading">"Loading listings…"</string>
   <string name="listings_unavailable">"No listings available"</string>
   <string name="listings_load_error">"Failed to load listings"</string>
+  <string name="listing_rooms">• %1$s rooms</string>
+  <string name="listing_area">• %1$d m²</string>
+  <string name="listing_price">• %1$d €</string>
+  <string name="listing_city">• %1$s</string>
 </resources>
