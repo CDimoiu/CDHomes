@@ -49,6 +49,7 @@ fun ListingsScreen(
   val scope = rememberCoroutineScope()
 
   val genericError = stringResource(R.string.generic_error)
+  val appName = stringResource(R.string.app_name)
 
   LaunchedEffect(uiState) {
     if (uiState is ListingsUiState.Error) {
@@ -61,7 +62,7 @@ fun ListingsScreen(
   Scaffold(
     topBar = {
       TopAppBar(
-        title = { Text("CD Homes") },
+        title = { Text(text = appName) },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
           containerColor = MaterialTheme.colorScheme.primary,
           titleContentColor = MaterialTheme.colorScheme.onPrimary,

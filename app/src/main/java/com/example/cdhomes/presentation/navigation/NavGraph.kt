@@ -36,7 +36,10 @@ fun NavGraph(navController: NavHostController) {
       route = LISTING_DETAIL,
       arguments = listOf(navArgument("id") { type = NavType.StringType })
     ) { backStackEntry ->
-      ListingDetailScreen(viewModel = hiltViewModel())
+      ListingDetailScreen(
+        viewModel = hiltViewModel(),
+        onBackClick = { navController.popBackStack() }
+      )
     }
   }
 }
