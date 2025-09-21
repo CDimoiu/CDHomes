@@ -2,6 +2,7 @@ package com.example.cdhomes.presentation.listings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.cdhomes.domain.model.Listing
 import com.example.cdhomes.domain.model.ListingFilter
 import com.example.cdhomes.domain.usecase.DeleteListingUseCase
 import com.example.cdhomes.domain.usecase.GetListingsUseCase
@@ -11,7 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
@@ -37,7 +38,8 @@ class ListingsViewModel @Inject constructor(
 
   private fun loadListings() {
     viewModelScope.launch {
-      getListingsUseCase(currentFilter)
+      getListingsUseCase() // do NOT pass filter to repo
+        .map { applyFilter(it) } // filter in ViewModel
         .onStart { _uiState.value = ListingsUiState.Loading }
         .catch { e ->
           _uiState.value = ListingsUiState.Error(
@@ -45,38 +47,47 @@ class ListingsViewModel @Inject constructor(
             filter = currentFilter
           )
         }
-        .collect { listings ->
+        .collect { filteredListings ->
           _uiState.value = ListingsUiState.Success(
-            listings = listings,
+            listings = filteredListings,
             filter = currentFilter
           )
         }
     }
   }
 
+  private fun applyFilter(listings: List<Listing>) = listings.filter { listing ->
+    (currentFilter.minPrice?.let { listing.price >= it } ?: true) &&
+      (currentFilter.maxPrice?.let { listing.price <= it } ?: true) &&
+      (currentFilter.minRooms?.let { listing.rooms?.let { r -> r >= it } ?: false } ?: true) &&
+      (currentFilter.maxRooms?.let { listing.rooms?.let { r -> r <= it } ?: false } ?: true) &&
+      (currentFilter.minArea?.let { listing.area >= it } ?: true) &&
+      (currentFilter.maxArea?.let { listing.area <= it } ?: true) &&
+      (currentFilter.city?.let { listing.city.contains(it, ignoreCase = true) } ?: true)
+  }
+
+
   fun refreshListings() {
     viewModelScope.launch {
       _uiState.value = ListingsUiState.Loading
 
-      val result = runCatching { getListingsUseCase.refreshRemote() }
-
-      result.onFailure { e ->
-        _uiState.value = ListingsUiState.Error(
-          message = e.message ?: "Refresh failed",
-          filter = currentFilter
-        )
-      }.onSuccess {
-        val listings = getListingsUseCase(currentFilter).first()
-        _uiState.value = ListingsUiState.Success(listings = listings, filter = currentFilter)
-      }
+      runCatching { getListingsUseCase.refreshRemote() }
+        .onFailure { e ->
+          _uiState.value = ListingsUiState.Error(
+            message = e.message ?: "Refresh failed",
+            filter = currentFilter
+          )
+        }
+        .onSuccess {
+          loadListings()
+        }
     }
   }
 
   fun deleteListing(id: Int) {
     viewModelScope.launch {
       deleteListingUseCase(id)
-      val listings = getListingsUseCase(currentFilter).first()
-      _uiState.value = ListingsUiState.Success(listings, currentFilter)
+      loadListings()
     }
   }
 }
