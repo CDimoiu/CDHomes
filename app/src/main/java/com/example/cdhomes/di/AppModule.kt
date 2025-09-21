@@ -6,6 +6,7 @@ import com.example.cdhomes.data.local.ListingDatabase
 import com.example.cdhomes.data.remote.ListingApi
 import com.example.cdhomes.data.repository.ListingRepositoryImpl
 import com.example.cdhomes.domain.repository.ListingRepository
+import com.example.cdhomes.domain.usecase.DeleteListingUseCase
 import com.example.cdhomes.domain.usecase.GetListingDetailsUseCase
 import com.example.cdhomes.domain.usecase.GetListingsUseCase
 import dagger.Module
@@ -69,4 +70,8 @@ object AppModule {
   @Provides
   fun provideGetListingDetailsUseCase(repository: ListingRepository): GetListingDetailsUseCase =
     GetListingDetailsUseCase(repository)
+
+  @Provides
+  fun provideDeleteListingUseCase(repository: ListingRepository): DeleteListingUseCase =
+    DeleteListingUseCase(repository)
 }

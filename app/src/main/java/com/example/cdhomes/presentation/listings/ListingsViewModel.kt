@@ -3,6 +3,7 @@ package com.example.cdhomes.presentation.listings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cdhomes.domain.model.ListingFilter
+import com.example.cdhomes.domain.usecase.DeleteListingUseCase
 import com.example.cdhomes.domain.usecase.GetListingsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -17,6 +18,7 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class ListingsViewModel @Inject constructor(
   private val getListingsUseCase: GetListingsUseCase,
+  private val deleteListingUseCase: DeleteListingUseCase,
 ) : ViewModel() {
 
   private val _uiState = MutableStateFlow<ListingsUiState>(ListingsUiState.Loading)
@@ -67,6 +69,14 @@ class ListingsViewModel @Inject constructor(
         val listings = getListingsUseCase(currentFilter).first()
         _uiState.value = ListingsUiState.Success(listings = listings, filter = currentFilter)
       }
+    }
+  }
+
+  fun deleteListing(id: Int) {
+    viewModelScope.launch {
+      deleteListingUseCase(id)
+      val listings = getListingsUseCase(currentFilter).first()
+      _uiState.value = ListingsUiState.Success(listings, currentFilter)
     }
   }
 }

@@ -49,4 +49,8 @@ class ListingRepositoryImpl @Inject constructor(
     val remote = listingApi.getListings()
     listingDao.insertAllListings(remote.items.map { it.toEntity() })
   }
+
+  override suspend fun deleteListing(id: Int) {
+    listingDao.deleteListingById(id)
+  }
 }

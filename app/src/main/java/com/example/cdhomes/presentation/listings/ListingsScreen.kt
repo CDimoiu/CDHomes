@@ -9,8 +9,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -29,7 +32,6 @@ fun ListingsScreen(
   val uiState by viewModel.uiState.collectAsState()
 
   Column(modifier = Modifier.fillMaxSize()) {
-    // Filters section reads from state if possible
     val currentFilter = when (uiState) {
       is ListingsUiState.Success -> (uiState as ListingsUiState.Success).filter
       is ListingsUiState.Error -> (uiState as ListingsUiState.Error).filter
@@ -66,8 +68,26 @@ fun ListingsScreen(
             contentPadding = PaddingValues(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
           ) {
-            items(listings) { listing ->
-              ListingItem(listing) { onItemClick(listing.id) }
+            items(items = listings, key = { it.id }) { listing ->
+              val dismissState = rememberSwipeToDismissBoxState(
+                confirmValueChange = { value ->
+                  if (value == SwipeToDismissBoxValue.EndToStart ||
+                    value == SwipeToDismissBoxValue.StartToEnd
+                  ) {
+                    viewModel.deleteListing(listing.id)
+                    true
+                  } else false
+                }
+              )
+
+              SwipeToDismissBox(
+                state = dismissState,
+                backgroundContent = {
+                  Box(modifier = Modifier.fillMaxSize())
+                }
+              ) {
+                ListingItem(listing = listing) { onItemClick(listing.id) }
+              }
             }
           }
         }
@@ -75,4 +95,3 @@ fun ListingsScreen(
     }
   }
 }
-
