@@ -38,13 +38,14 @@ class ListingsViewModel @Inject constructor(
 
   private fun loadListings() {
     viewModelScope.launch {
-      getListingsUseCase() // do NOT pass filter to repo
-        .map { applyFilter(it) } // filter in ViewModel
+      getListingsUseCase()
+        .map { applyFilter(it) }
         .onStart { _uiState.value = ListingsUiState.Loading }
-        .catch { e ->
+        .catch { exception ->
           _uiState.value = ListingsUiState.Error(
-            message = e.message ?: "Oops, something went wrong. Please try again later.",
-            filter = currentFilter
+            message = exception.message ?: "Oops, something went wrong. Please try again later.",
+            filter = currentFilter,
+            cachedListings = emptyList()
           )
         }
         .collect { filteredListings ->
@@ -56,17 +57,6 @@ class ListingsViewModel @Inject constructor(
     }
   }
 
-  private fun applyFilter(listings: List<Listing>) = listings.filter { listing ->
-    (currentFilter.minPrice?.let { listing.price >= it } ?: true) &&
-      (currentFilter.maxPrice?.let { listing.price <= it } ?: true) &&
-      (currentFilter.minRooms?.let { listing.rooms?.let { r -> r >= it } ?: false } ?: true) &&
-      (currentFilter.maxRooms?.let { listing.rooms?.let { r -> r <= it } ?: false } ?: true) &&
-      (currentFilter.minArea?.let { listing.area >= it } ?: true) &&
-      (currentFilter.maxArea?.let { listing.area <= it } ?: true) &&
-      (currentFilter.city?.let { listing.city.contains(it, ignoreCase = true) } ?: true)
-  }
-
-
   fun refreshListings() {
     viewModelScope.launch {
       _uiState.value = ListingsUiState.Loading
@@ -74,7 +64,7 @@ class ListingsViewModel @Inject constructor(
       runCatching { getListingsUseCase.refreshRemote() }
         .onFailure { e ->
           _uiState.value = ListingsUiState.Error(
-            message = e.message ?: "Refresh failed",
+            message = e.message ?: "Oops, something went wrong. Please try again later.",
             filter = currentFilter
           )
         }
@@ -89,5 +79,16 @@ class ListingsViewModel @Inject constructor(
       deleteListingUseCase(id)
       loadListings()
     }
+  }
+
+  private fun applyFilter(listings: List<Listing>) = listings.filter { listing ->
+    (currentFilter.minPrice?.let { listing.price >= it } ?: true) &&
+      (currentFilter.maxPrice?.let { listing.price <= it } ?: true) &&
+      (currentFilter.minRooms?.let { listing.rooms?.let { rooms -> rooms >= it } ?: false }
+        ?: true) &&
+      (currentFilter.maxRooms?.let { listing.rooms?.let { rooms -> rooms <= it } ?: false }
+        ?: true) &&
+      (currentFilter.minArea?.let { listing.area >= it } ?: true) &&
+      (currentFilter.maxArea?.let { listing.area <= it } ?: true)
   }
 }
