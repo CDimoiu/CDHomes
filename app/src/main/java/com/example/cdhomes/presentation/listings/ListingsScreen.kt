@@ -5,23 +5,31 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.cdhomes.domain.model.ListingFilter
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,45 +38,66 @@ fun ListingsScreen(
   onItemClick: (Int) -> Unit,
 ) {
   val uiState by viewModel.uiState.collectAsState()
+  val snackbarHostState = remember { SnackbarHostState() }
+  val scope = rememberCoroutineScope()
 
-  Column(modifier = Modifier.fillMaxSize()) {
-    val currentFilter = when (uiState) {
-      is ListingsUiState.Success -> (uiState as ListingsUiState.Success).filter
-      is ListingsUiState.Error -> (uiState as ListingsUiState.Error).filter
-      else -> ListingFilter()
+  LaunchedEffect(uiState) {
+    if (uiState is ListingsUiState.Error) {
+      val message = (uiState as ListingsUiState.Error).message
+      scope.launch { snackbarHostState.showSnackbar(message) }
     }
+  }
 
-    FiltersSection(
-      filter = currentFilter,
-      onFilterChange = { viewModel.updateFilter(it) }
-    )
-
-    PullToRefreshBox(
-      isRefreshing = uiState is ListingsUiState.Loading,
-      onRefresh = { viewModel.refreshListings() },
-      modifier = Modifier.fillMaxSize()
+  Scaffold(
+    snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+  ) { innerPadding ->
+    Column(
+      modifier = Modifier
+        .fillMaxSize()
+        .padding(innerPadding)
     ) {
-      when (uiState) {
-        is ListingsUiState.Loading -> {
-          Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-          }
-        }
+      val currentFilter = when (uiState) {
+        is ListingsUiState.Success -> (uiState as ListingsUiState.Success).filter
+        is ListingsUiState.Error -> (uiState as ListingsUiState.Error).filter
+        is ListingsUiState.Loading -> ListingFilter()
+      }
 
-        is ListingsUiState.Error -> {
-          Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(text = (uiState as ListingsUiState.Error).message)
-          }
-        }
+      FiltersSection(
+        filter = currentFilter,
+        onFilterChange = { viewModel.updateFilter(it) }
+      )
 
-        is ListingsUiState.Success -> {
-          val listings = (uiState as ListingsUiState.Success).listings
+      val listingsToShow = when (uiState) {
+        is ListingsUiState.Success -> (uiState as ListingsUiState.Success).listings
+        is ListingsUiState.Error -> (uiState as ListingsUiState.Error).cachedListings
+        is ListingsUiState.Loading -> (uiState as ListingsUiState.Loading).cachedListings
+      }
+
+      PullToRefreshBox(
+        isRefreshing = uiState is ListingsUiState.Loading,
+        onRefresh = { viewModel.refreshListings() },
+        modifier = Modifier.fillMaxSize()
+      ) {
+        if (listingsToShow.isEmpty()) {
+          Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+          ) {
+            Text(
+              text = when (uiState) {
+                is ListingsUiState.Error -> "Failed to load listings"
+                is ListingsUiState.Loading -> "Loading listings..."
+                else -> "No listings available"
+              }
+            )
+          }
+        } else {
           LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
           ) {
-            items(items = listings, key = { it.id }) { listing ->
+            items(items = listingsToShow, key = { it.id }) { listing ->
               val dismissState = rememberSwipeToDismissBoxState(
                 confirmValueChange = { value ->
                   if (value == SwipeToDismissBoxValue.EndToStart ||
@@ -82,13 +111,20 @@ fun ListingsScreen(
 
               SwipeToDismissBox(
                 state = dismissState,
-                backgroundContent = {
-                  Box(modifier = Modifier.fillMaxSize())
-                }
+                backgroundContent = { Box(modifier = Modifier.fillMaxSize()) }
               ) {
                 ListingItem(listing = listing) { onItemClick(listing.id) }
               }
             }
+          }
+        }
+
+        if (uiState is ListingsUiState.Loading) {
+          Box(
+            Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+          ) {
+            CircularProgressIndicator()
           }
         }
       }

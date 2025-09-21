@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
@@ -22,7 +23,8 @@ class ListingsViewModel @Inject constructor(
   private val deleteListingUseCase: DeleteListingUseCase,
 ) : ViewModel() {
 
-  private val _uiState = MutableStateFlow<ListingsUiState>(ListingsUiState.Loading)
+  private val _uiState =
+    MutableStateFlow<ListingsUiState>(ListingsUiState.Loading(cachedListings = emptyList()))
   val uiState: StateFlow<ListingsUiState> = _uiState.asStateFlow()
 
   private var currentFilter = ListingFilter()
@@ -40,7 +42,7 @@ class ListingsViewModel @Inject constructor(
     viewModelScope.launch {
       getListingsUseCase()
         .map { applyFilter(it) }
-        .onStart { _uiState.value = ListingsUiState.Loading }
+        .onStart { _uiState.value = ListingsUiState.Loading(cachedListings = emptyList()) }
         .catch { exception ->
           _uiState.value = ListingsUiState.Error(
             message = exception.message ?: "Oops, something went wrong. Please try again later.",
@@ -59,17 +61,28 @@ class ListingsViewModel @Inject constructor(
 
   fun refreshListings() {
     viewModelScope.launch {
-      _uiState.value = ListingsUiState.Loading
+      val currentListings = when (val state = _uiState.value) {
+        is ListingsUiState.Success -> state.listings
+        is ListingsUiState.Error -> state.cachedListings
+        else -> emptyList()
+      }
+
+      _uiState.value = ListingsUiState.Loading(cachedListings = currentListings)
 
       runCatching { getListingsUseCase.refreshRemote() }
         .onFailure { e ->
           _uiState.value = ListingsUiState.Error(
-            message = e.message ?: "Oops, something went wrong. Please try again later.",
-            filter = currentFilter
+            message = e.message ?: "Refresh failed",
+            filter = currentFilter,
+            cachedListings = currentListings
           )
         }
         .onSuccess {
-          loadListings()
+          val allListings = applyFilter(getListingsUseCase().first())
+          _uiState.value = ListingsUiState.Success(
+            listings = allListings,
+            filter = currentFilter
+          )
         }
     }
   }
