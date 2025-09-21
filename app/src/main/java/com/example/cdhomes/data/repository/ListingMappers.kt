@@ -1,8 +1,8 @@
 package com.example.cdhomes.data.repository
 
-import com.example.cdhomes.domain.model.Listing
 import com.example.cdhomes.data.local.ListingEntity
 import com.example.cdhomes.data.remote.ListingDto
+import com.example.cdhomes.domain.model.Listing
 
 fun ListingDto.toEntity() = ListingEntity(
   id = id,

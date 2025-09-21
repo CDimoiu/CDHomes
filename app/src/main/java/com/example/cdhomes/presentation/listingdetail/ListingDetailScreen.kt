@@ -18,18 +18,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import coil.compose.AsyncImage
+import com.example.cdhomes.R
 import com.example.cdhomes.domain.model.Listing
 
 @Composable
 fun ListingDetailScreen(
   viewModel: ListingDetailViewModel = hiltViewModel(),
 ) {
-  val state by viewModel.uiState.collectAsState()
+  val uiState by viewModel.uiState.collectAsState()
 
-  when (state) {
+  val genericError = stringResource(R.string.generic_error)
+
+  when (uiState) {
     is ListingDetailUiState.Loading -> Box(
       Modifier.fillMaxSize(),
       contentAlignment = Alignment.Center
@@ -39,11 +43,12 @@ fun ListingDetailScreen(
       Modifier.fillMaxSize(),
       contentAlignment = Alignment.Center
     ) {
-      Text("Error: ${(state as ListingDetailUiState.Error).message}")
+      Text((uiState as ListingDetailUiState.Error).message.takeIf { it.isNullOrBlank() }
+             ?: genericError)
     }
 
     is ListingDetailUiState.Success -> {
-      val listing = (state as ListingDetailUiState.Success<Listing>).data
+      val listing = (uiState as ListingDetailUiState.Success<Listing>).data
       Column(
         modifier = Modifier
           .fillMaxSize()

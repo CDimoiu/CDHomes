@@ -11,7 +11,7 @@ sealed class ListingsUiState {
   ) : ListingsUiState()
 
   data class Error(
-    val message: String,
+    val message: String?,
     val filter: ListingFilter = ListingFilter(),
     val cachedListings: List<Listing> = emptyList(),
   ) : ListingsUiState()

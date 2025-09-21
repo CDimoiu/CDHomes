@@ -45,7 +45,7 @@ class ListingsViewModel @Inject constructor(
         .onStart { _uiState.value = ListingsUiState.Loading(cachedListings = emptyList()) }
         .catch { exception ->
           _uiState.value = ListingsUiState.Error(
-            message = exception.message ?: "Oops, something went wrong. Please try again later.",
+            message = exception.message,
             filter = currentFilter,
             cachedListings = emptyList()
           )
@@ -70,9 +70,9 @@ class ListingsViewModel @Inject constructor(
       _uiState.value = ListingsUiState.Loading(cachedListings = currentListings)
 
       runCatching { getListingsUseCase.refreshRemote() }
-        .onFailure { e ->
+        .onFailure { exception ->
           _uiState.value = ListingsUiState.Error(
-            message = e.message ?: "Refresh failed",
+            message = exception.message,
             filter = currentFilter,
             cachedListings = currentListings
           )

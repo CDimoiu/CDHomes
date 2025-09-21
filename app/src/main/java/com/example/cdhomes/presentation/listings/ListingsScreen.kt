@@ -26,8 +26,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.cdhomes.R
 import com.example.cdhomes.domain.model.ListingFilter
 import kotlinx.coroutines.launch
 
@@ -41,9 +43,12 @@ fun ListingsScreen(
   val snackbarHostState = remember { SnackbarHostState() }
   val scope = rememberCoroutineScope()
 
+  val genericError = stringResource(R.string.generic_error)
+
   LaunchedEffect(uiState) {
     if (uiState is ListingsUiState.Error) {
-      val message = (uiState as ListingsUiState.Error).message
+      val message = (uiState as ListingsUiState.Error).message.takeIf { it.isNullOrBlank() }
+        ?: genericError
       scope.launch { snackbarHostState.showSnackbar(message) }
     }
   }

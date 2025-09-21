@@ -21,17 +21,14 @@ class ListingDetailViewModel @Inject constructor(
   savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
-  val uiState: StateFlow<ListingDetailUiState<Listing>> = savedStateHandle.get<String>("id")?.toIntOrNull()?.let { id ->
-    getListingDetailsUseCase(id)
-      .filterNotNull()
-      .map { ListingDetailUiState.Success(it) as ListingDetailUiState<Listing> }
-      .catch {
-        emit(
-          ListingDetailUiState.Error(
-            it.message ?: "Oops, something went wrong. Please try again later."
-          )
-        )
-      }
-      .stateIn(viewModelScope, SharingStarted.Lazily, ListingDetailUiState.Loading)
-  } ?: MutableStateFlow(ListingDetailUiState.Error("Invalid ID"))
+  val uiState: StateFlow<ListingDetailUiState<Listing>> =
+    savedStateHandle.get<String>("id")?.toIntOrNull()?.let { id ->
+      getListingDetailsUseCase(id)
+        .filterNotNull()
+        .map { ListingDetailUiState.Success(it) as ListingDetailUiState<Listing> }
+        .catch {
+          emit(ListingDetailUiState.Error(it.message))
+        }
+        .stateIn(viewModelScope, SharingStarted.Lazily, ListingDetailUiState.Loading)
+    } ?: MutableStateFlow(ListingDetailUiState.Error(null))
 }
