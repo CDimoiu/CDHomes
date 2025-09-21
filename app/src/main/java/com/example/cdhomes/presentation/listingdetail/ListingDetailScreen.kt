@@ -22,29 +22,33 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.cdhomes.domain.model.Listing
-import com.example.cdhomes.presentation.common.UiState
 
 @Composable
 fun ListingDetailScreen(
-  id: Int,
   viewModel: ListingDetailViewModel = hiltViewModel(),
 ) {
   val state by viewModel.uiState.collectAsState()
 
   when (state) {
-    is UiState.Loading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-      CircularProgressIndicator()
+    is ListingDetailUiState.Loading -> Box(
+      Modifier.fillMaxSize(),
+      contentAlignment = Alignment.Center
+    ) { CircularProgressIndicator() }
+
+    is ListingDetailUiState.Error -> Box(
+      Modifier.fillMaxSize(),
+      contentAlignment = Alignment.Center
+    ) {
+      Text("Error: ${(state as ListingDetailUiState.Error).message}")
     }
 
-    is UiState.Error -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-      Text("Error: ${(state as UiState.Error).message}")
-    }
-
-    is UiState.Success -> {
-      val listing = (state as UiState.Success<Listing>).data
-      Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(16.dp)) {
+    is ListingDetailUiState.Success -> {
+      val listing = (state as ListingDetailUiState.Success<Listing>).data
+      Column(
+        modifier = Modifier
+          .fillMaxSize()
+          .padding(16.dp)
+      ) {
         AsyncImage(
           model = listing.url ?: "",
           contentDescription = listing.city,

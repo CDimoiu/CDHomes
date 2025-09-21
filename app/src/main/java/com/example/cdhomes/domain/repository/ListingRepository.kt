@@ -6,4 +6,5 @@ import kotlinx.coroutines.flow.Flow
 interface ListingRepository {
   fun getListings(): Flow<List<Listing>>
   fun getListing(id: Int): Flow<Listing?>
+  suspend fun refreshListings()
 }

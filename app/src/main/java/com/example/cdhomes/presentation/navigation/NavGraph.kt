@@ -1,40 +1,42 @@
 package com.example.cdhomes.presentation.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.cdhomes.presentation.listingdetail.ListingDetailScreen
 import com.example.cdhomes.presentation.listings.ListingsScreen
+import com.example.cdhomes.presentation.navigation.Destinations.LISTING_DETAIL
 import com.example.cdhomes.presentation.onboarding.SplashScreen
 
 @Composable
-fun NavGraph(
-  navController: NavHostController = rememberNavController(),
-) {
+fun NavGraph(navController: NavHostController) {
   NavHost(
     navController = navController,
     startDestination = Destinations.SPLASH
   ) {
-    composable(Destinations.SPLASH) { SplashScreen { navController.navigate(Destinations.LISTINGS) } }
+    composable(Destinations.SPLASH) {
+      SplashScreen {
+        navController.navigate(Destinations.LISTINGS) {
+          popUpTo(Destinations.SPLASH) { inclusive = true }
+        }
+      }
+    }
 
     composable(Destinations.LISTINGS) {
-      ListingsScreen(
-        onItemClick = { id ->
-          navController.navigate(Destinations.listingDetailRoute(id))
-        }
-      )
+      ListingsScreen(onItemClick = { id ->
+        navController.navigate("listing_detail/$id")
+      })
     }
 
     composable(
-      route = Destinations.LISTING_DETAIL,
-      arguments = listOf(navArgument("id") { type = NavType.IntType })
+      route = LISTING_DETAIL,
+      arguments = listOf(navArgument("id") { type = NavType.StringType })
     ) { backStackEntry ->
-      val id = backStackEntry.arguments?.getInt("id") ?: return@composable
-      ListingDetailScreen(id = id)
+      ListingDetailScreen(viewModel = hiltViewModel())
     }
   }
 }
